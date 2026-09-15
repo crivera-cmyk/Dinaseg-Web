@@ -9,13 +9,13 @@ del ERP.
 
 **En producción:** [dinaseg-web.vercel.app](https://dinaseg-web.vercel.app)
 (15-sep-2026). Las 14 páginas de familia que necesita la campaña de Google
-Ads (`marketing/google-ads/` en Dinaseg-ERP) ya funcionan, con contenido
-institucional real (teléfonos, misión, dirección — sacados del sitio actual,
-sin relleno de plantilla), y el formulario de cotización **ya guarda en la
-base real** (Neon, `DB_URL` configurada en Vercel — confirmado insertando y
-leyendo una fila de prueba en `quote_requests`). Falta: catálogo real (ver
-`lib/products.ts` más abajo), SMTP para el correo de aviso, y mover el DNS
-de `www.dinaseg.cl`.
+Ads (`marketing/google-ads/` en Dinaseg-ERP) ya funcionan con **catálogo
+real** (99,3% del catálogo del ERP, sincronizado por `server/public-sync.js`
+en Dinaseg-ERP), contenido institucional real (teléfonos, misión, dirección),
+y el formulario de cotización **guarda en Neon y manda correo a
+contacto@dinaseg.cl** (SMTP confirmado en vivo, mismo Gmail que ya usa el
+ERP). Falta solo: mover el DNS de `www.dinaseg.cl` y fotos de producto
+(Fase 2, depende de la migración a Cloudflare R2 del ERP).
 
 **Nota sobre el repo:** es **público** en GitHub (no privado) — necesario
 porque el plan Hobby de Vercel bloquea el auto-deploy de commits con más de
@@ -50,9 +50,10 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
   `marketing/google-ads/ads_rsa.csv` en Dinaseg-ERP).
 - `lib/site.ts` — datos institucionales reales (teléfonos, misión, dirección).
 - `lib/products.ts` — lee catálogo de la tabla `public_products` en Neon,
-  poblada por `server/public-sync.js` en Dinaseg-ERP (**ese script todavía no
-  existe** — es tarea pendiente en ese otro repo; mientras tanto esta función
-  devuelve `[]` y las páginas muestran contenido institucional en su lugar).
+  poblada por `server/public-sync.js` en Dinaseg-ERP (ya implementado y
+  sincronizando — 99,3% del catálogo real). Si esa tabla estuviera vacía,
+  esta función devuelve `[]` y las páginas muestran contenido institucional
+  en su lugar (degradación, no debería pasar en producción normalmente).
 - `lib/db.ts` / `lib/mailer.ts` — conexión a Neon y envío de correo, ambos
   con degradación segura si las variables de entorno no están configuradas.
 
@@ -66,5 +67,8 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
 3. ~~Crear cuenta de Neon, pasar `DB_URL` a Vercel.~~ ✅ 15-sep-2026 — confirmado
    funcionando de punta a punta (formulario → Neon).
 4. Mover DNS de `www.dinaseg.cl` a Cloudflare apuntando a Vercel.
-5. Implementar `server/public-sync.js` en Dinaseg-ERP (llena `public_products`).
-6. Configurar `SMTP_*` y `NEXT_PUBLIC_GTAG_ID` en Vercel.
+5. ~~Implementar `server/public-sync.js` en Dinaseg-ERP.~~ ✅ 15-sep-2026 —
+   99,3% del catálogo (6402/6449 productos) sincronizado.
+6. ~~Configurar `SMTP_*`.~~ ✅ 15-sep-2026 — correo de cotización confirmado
+   en vivo. Falta solo `NEXT_PUBLIC_GTAG_ID` (cuando Carlos tenga el ID de
+   Google Ads a mano).
