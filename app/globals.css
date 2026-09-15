@@ -2,25 +2,24 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #27272a;
+  /* Rojo y gris tomados del isotipo real de Dinaseg (public/images/logo.png) */
+  --dinaseg-red: #d9291f;
+  --dinaseg-red-dark: #b71f17;
+  --dinaseg-gray: #4b4b4d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-dinaseg-red: var(--dinaseg-red);
+  --color-dinaseg-red-dark: var(--dinaseg-red-dark);
+  --color-dinaseg-gray: var(--dinaseg-gray);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
