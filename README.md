@@ -48,7 +48,8 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
 
 ## Pendiente para Fase 1 completa (ver PLAN_WEB_PUBLICA.md)
 
-1. Crear repo en GitHub y pushear esto (`git remote add origin ...`).
+1. ~~Crear repo en GitHub y pushear esto.~~ ✅ 15-sep-2026:
+   [github.com/crivera-cmyk/Dinaseg-Web](https://github.com/crivera-cmyk/Dinaseg-Web).
 2. Crear cuenta de Vercel, importar el repo, deploy.
 3. Crear cuenta de Neon, pasar `PUBLIC_DB_URL` a Vercel.
 4. Mover DNS de `www.dinaseg.cl` a Cloudflare apuntando a Vercel.
