@@ -7,12 +7,22 @@ del ERP.
 
 ## Estado (Fase 0 + Fase 1 del plan)
 
-Scaffold funcionando con las 14 páginas de familia que necesita la campaña de
-Google Ads (`marketing/google-ads/` en Dinaseg-ERP), contenido institucional
-real (teléfonos, misión, dirección — sacados del sitio actual, sin relleno de
-plantilla), y formulario de cotización. **Todavía sin desplegar** (sin cuenta
-de Vercel ni de Neon creada) — funciona con datos de ejemplo/degradado hasta
-que esas cuentas existan.
+**En producción:** [dinaseg-web.vercel.app](https://dinaseg-web.vercel.app)
+(15-sep-2026). Las 14 páginas de familia que necesita la campaña de Google
+Ads (`marketing/google-ads/` en Dinaseg-ERP) ya funcionan, con contenido
+institucional real (teléfonos, misión, dirección — sacados del sitio actual,
+sin relleno de plantilla), y el formulario de cotización **ya guarda en la
+base real** (Neon, `DB_URL` configurada en Vercel — confirmado insertando y
+leyendo una fila de prueba en `quote_requests`). Falta: catálogo real (ver
+`lib/products.ts` más abajo), SMTP para el correo de aviso, y mover el DNS
+de `www.dinaseg.cl`.
+
+**Nota sobre el repo:** es **público** en GitHub (no privado) — necesario
+porque el plan Hobby de Vercel bloquea el auto-deploy de commits con más de
+un autor (los `Co-Authored-By:` de Claude cuentan como "colaborador") en
+repos privados. El código no tiene secretos (Neon/SMTP viven solo en
+variables de entorno de Vercel), así que hacerlo público no expone nada
+sensible.
 
 ## Desarrollo local
 
@@ -49,9 +59,12 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
 ## Pendiente para Fase 1 completa (ver PLAN_WEB_PUBLICA.md)
 
 1. ~~Crear repo en GitHub y pushear esto.~~ ✅ 15-sep-2026:
-   [github.com/crivera-cmyk/Dinaseg-Web](https://github.com/crivera-cmyk/Dinaseg-Web).
-2. Crear cuenta de Vercel, importar el repo, deploy.
-3. ~~Crear cuenta de Neon, pasar `DB_URL` a Vercel.~~ ✅ 15-sep-2026.
+   [github.com/crivera-cmyk/Dinaseg-Web](https://github.com/crivera-cmyk/Dinaseg-Web)
+   (público, ver nota arriba).
+2. ~~Crear cuenta de Vercel, importar el repo, deploy.~~ ✅ 15-sep-2026:
+   [dinaseg-web.vercel.app](https://dinaseg-web.vercel.app).
+3. ~~Crear cuenta de Neon, pasar `DB_URL` a Vercel.~~ ✅ 15-sep-2026 — confirmado
+   funcionando de punta a punta (formulario → Neon).
 4. Mover DNS de `www.dinaseg.cl` a Cloudflare apuntando a Vercel.
 5. Implementar `server/public-sync.js` en Dinaseg-ERP (llena `public_products`).
 6. Configurar `SMTP_*` y `NEXT_PUBLIC_GTAG_ID` en Vercel.
