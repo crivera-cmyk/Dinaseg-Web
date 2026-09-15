@@ -7,6 +7,14 @@ import { getProductsByFamily } from "@/lib/products";
 import { SITE } from "@/lib/site";
 import QuoteForm from "@/components/QuoteForm";
 
+// El catálogo se sincroniza desde el ERP una vez al día (cron 02:15) más
+// corridas manuales tras cada import de precios — sin esto, Next.js sirve
+// para siempre la página estática generada en el último deploy, aunque la
+// base de Neon ya tenga catálogo nuevo. 3600 = revisa cada 1 hora como
+// máximo (ISR), sin perder la velocidad de servir HTML estático el resto
+// del tiempo.
+export const revalidate = 3600;
+
 // Fase 1 (ver PLAN_WEB_PUBLICA.md, Dinaseg-ERP): estas son las 14 URLs
 // exactas que ya están cargadas en la campaña de Google Ads
 // (marketing/google-ads/ads_rsa.csv) — no renombrar los slugs sin avisar,
