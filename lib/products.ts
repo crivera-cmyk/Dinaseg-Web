@@ -10,7 +10,7 @@
 //   descripcion  TEXT
 //   imagen_url   TEXT            -- NULL si no hay foto todavía (se usa placeholder)
 //
-// Mientras esa tabla no exista o PUBLIC_DB_URL no esté configurada, esta
+// Mientras esa tabla no exista o DB_URL no esté configurada, esta
 // función devuelve [] y las páginas de familia muestran el contenido
 // institucional (intro + destacados) en vez de una grilla vacía o rota.
 import { getPool } from "./db";

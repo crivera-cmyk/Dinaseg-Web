@@ -5,7 +5,7 @@ import { enviarCorreoCotizacion, mailConfigurado } from "@/lib/mailer";
 // POST /api/quotes — recibe una cotización del formulario público.
 //
 // Degradación intencional (ver PLAN_WEB_PUBLICA.md): mientras Carlos no haya
-// creado la cuenta de Neon (PUBLIC_DB_URL) y/o configurado el SMTP en Vercel,
+// creado la cuenta de Neon (DB_URL) y/o configurado el SMTP en Vercel,
 // esto NO debe devolver error al usuario del sitio — igual se manda el
 // correo si el SMTP está listo, y/o se guarda en la base si está lista. Si
 // NINGUNO de los dos está configurado todavía, igual se responde éxito (ya

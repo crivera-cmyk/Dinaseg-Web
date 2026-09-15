@@ -26,7 +26,7 @@ Abrir [http://localhost:3000](http://localhost:3000).
 ## Variables de entorno
 
 Ver `.env.example`. Ninguna es obligatoria para levantar el sitio — sin
-`PUBLIC_DB_URL` se muestra contenido institucional en vez de catálogo real, y
+`DB_URL` se muestra contenido institucional en vez de catálogo real, y
 sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
 `app/api/quotes/route.ts`).
 
@@ -51,7 +51,7 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
 1. ~~Crear repo en GitHub y pushear esto.~~ ✅ 15-sep-2026:
    [github.com/crivera-cmyk/Dinaseg-Web](https://github.com/crivera-cmyk/Dinaseg-Web).
 2. Crear cuenta de Vercel, importar el repo, deploy.
-3. Crear cuenta de Neon, pasar `PUBLIC_DB_URL` a Vercel.
+3. ~~Crear cuenta de Neon, pasar `DB_URL` a Vercel.~~ ✅ 15-sep-2026.
 4. Mover DNS de `www.dinaseg.cl` a Cloudflare apuntando a Vercel.
 5. Implementar `server/public-sync.js` en Dinaseg-ERP (llena `public_products`).
 6. Configurar `SMTP_*` y `NEXT_PUBLIC_GTAG_ID` en Vercel.
