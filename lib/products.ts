@@ -44,8 +44,15 @@ export async function getProductsByFamily(slug: string): Promise<PublicProduct[]
   if (!pool) return [];
 
   try {
+    // Con foto real primero: hoy (19-sep-2026) solo 4 de ~6400 productos
+    // tienen foto cargada (ver server/public-sync.js en Dinaseg-ERP) —
+    // ordenar solo por nombre los dejaba enterrados pasado el LIMIT 24 en
+    // categorías con muchos productos (ej. cascos: 111 en total).
     const { rows } = await pool.query(
-      `SELECT sku, nombre, familia, descripcion, imagen_url FROM public_products WHERE familia = $1 ORDER BY nombre LIMIT 24`,
+      `SELECT sku, nombre, familia, descripcion, imagen_url FROM public_products
+        WHERE familia = $1
+        ORDER BY (imagen_url IS NOT NULL) DESC, nombre
+        LIMIT 24`,
       [slug]
     );
     return rows.map(mapRow);
@@ -88,7 +95,9 @@ export async function getFeaturedProducts(): Promise<PublicProduct[]> {
   try {
     const { rows } = await pool.query(`
       SELECT sku, nombre, familia, descripcion, imagen_url FROM (
-        SELECT *, ROW_NUMBER() OVER (PARTITION BY familia ORDER BY nombre) AS rn
+        SELECT *, ROW_NUMBER() OVER (
+          PARTITION BY familia ORDER BY (imagen_url IS NOT NULL) DESC, nombre
+        ) AS rn
         FROM public_products
         WHERE familia IN ('vestuario', 'calzado-seguridad', 'proteccion-manos', 'cascos-seguridad')
       ) t
