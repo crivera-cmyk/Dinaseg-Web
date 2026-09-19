@@ -14,11 +14,10 @@ export default async function Home() {
 
   return (
     <div>
-      {/* Hero / carrusel de categorías */}
-      <section className="bg-dinaseg-gray">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24 text-center">
-          <HeroCarousel />
-        </div>
+      {/* Hero / carrusel de categorías — la imagen va de punta a punta (como
+          los banners del sitio anterior), el CTA/dots quedan centrados adentro. */}
+      <section className="bg-dinaseg-gray py-6 sm:py-10">
+        <HeroCarousel />
       </section>
 
       {/* Beneficios (mismos que la campaña de Ads, para consistencia de mensaje) */}

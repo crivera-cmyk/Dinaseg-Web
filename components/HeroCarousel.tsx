@@ -1,40 +1,88 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-type Slide = { titulo: string; subtitulo: string; cta: string; href: string };
+// Slides reales del sitio viejo (www.dinaseg.cl en v2nets) — el carrusel de
+// "dummy images" del slider (RevSlider) era placeholder, pero estos son los
+// assets reales que sí se publicaban ahí (fondos/logos/productos), bajados
+// y reusados acá con destinos reales del catálogo (18-sep-2026, a pedido de
+// Carlos, después de que confirmó con capturas que había contenido real).
+type Slide = {
+  key: string;
+  href: string;
+  cta: string;
+  bg: { src: string; alt: string } | { gradient: string };
+};
 
-// Mismo espíritu que los "4 banners principales" del sitio viejo (Calzado,
-// Implementos, Protección Personal, Ropa) pero con links reales a
-// categorías con catálogo de verdad, en vez de imágenes de relleno
-// genéricas — el sitio viejo usaba "dummy images" según su propio código.
 const SLIDES: Slide[] = [
-  {
-    titulo: "Ropa de trabajo y uniformes",
-    subtitulo: "Vestuario industrial con despacho a todo Santiago",
-    cta: "Ver Vestuario",
-    href: "/vestuario",
-  },
-  {
-    titulo: "Calzado con puntera de acero",
-    subtitulo: "Steelpro y Hardwork, stock permanente",
-    cta: "Ver Calzado de Seguridad",
-    href: "/calzado-seguridad",
-  },
-  {
-    titulo: "Guantes para cada faena",
-    subtitulo: "Guantes de seguridad industrial al por mayor",
-    cta: "Ver Protección Manos",
-    href: "/proteccion-manos",
-  },
-  {
-    titulo: "Cascos certificados",
-    subtitulo: "Con y sin barbiquejo, para toda tu obra",
-    cta: "Ver Cascos de Seguridad",
-    href: "/cascos-seguridad",
-  },
+  { key: "aquiles", href: "/proteccion-manos", cta: "Ver Guantes Aquiles", bg: { src: "/images/carousel/aquiles-fondo.webp", alt: "Guantes Aquiles" } },
+  { key: "dinaseg", href: "/proteccion-caida", cta: "Ver Protección Caída", bg: { src: "/images/carousel/dinaseg-fondo.png", alt: "Protección contra caídas Dinaseg" } },
+  { key: "calzado", href: "/calzado-seguridad", cta: "Ver Calzado de Seguridad", bg: { gradient: "linear-gradient(90deg, #c8102e, #ff5a00, #ffd400)" } },
+  { key: "panamajack", href: "/calzado-seguridad", cta: "Ver Panama Jack", bg: { src: "/images/carousel/panama-jack-fondo.png", alt: "Botas Panama Jack" } },
 ];
+
+function SlideContent({ slideKey }: { slideKey: string }) {
+  switch (slideKey) {
+    case "aquiles":
+      return (
+        <>
+          <Image
+            src="/images/carousel/aquiles-logo.png"
+            alt="Aquiles"
+            width={400}
+            height={300}
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[70%] w-auto -translate-x-1/2 -translate-y-1/2 opacity-90"
+          />
+          <Image
+            src="/images/carousel/aquiles-guante.png"
+            alt="Guantes Aquiles"
+            width={500}
+            height={500}
+            className="pointer-events-none absolute right-[4%] top-1/2 h-[85%] w-auto -translate-y-1/2 object-contain drop-shadow-xl sm:right-[10%]"
+          />
+        </>
+      );
+    case "dinaseg":
+      return (
+        <Image
+          src="/images/logo.png"
+          alt="Dinaseg"
+          width={300}
+          height={300}
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[55%] w-auto -translate-x-1/2 -translate-y-1/2"
+        />
+      );
+    case "calzado":
+      return (
+        <div className="absolute inset-0 flex items-center justify-around px-2">
+          {[
+            { logo: "/images/carousel/logo-climber.png", bota: "/images/carousel/bota-climber.png" },
+            { logo: "/images/carousel/logo-proflex.png", bota: "/images/carousel/bota-proflex.png" },
+            { logo: "/images/carousel/logo-tempest.png", bota: "/images/carousel/bota-tempest.png" },
+          ].map((m) => (
+            <div key={m.logo} className="flex flex-1 flex-col items-center gap-1 sm:gap-2">
+              <Image src={m.logo} alt="" width={160} height={40} className="h-4 w-auto sm:h-8" />
+              <Image src={m.bota} alt="Calzado de seguridad" width={260} height={260} className="h-16 w-auto object-contain sm:h-32" />
+            </div>
+          ))}
+        </div>
+      );
+    case "panamajack":
+      return (
+        <Image
+          src="/images/carousel/panama-jack-logo.png"
+          alt="Panama Jack — Made in Spain"
+          width={300}
+          height={300}
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[75%] w-auto -translate-x-1/2 -translate-y-1/2"
+        />
+      );
+    default:
+      return null;
+  }
+}
 
 export default function HeroCarousel() {
   const [i, setI] = useState(0);
@@ -47,13 +95,21 @@ export default function HeroCarousel() {
   const slide = SLIDES[i];
 
   return (
-    <div className="relative overflow-hidden">
-      <div key={i} className="animate-[fadeIn_0.5s_ease-in-out]">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-dinaseg-red">{slide.subtitulo}</p>
-        <h1 className="mx-auto max-w-3xl text-3xl font-extrabold text-white sm:text-5xl">{slide.titulo}</h1>
-      </div>
+    <div>
+      <Link
+        href={slide.href}
+        className="relative block aspect-[1903/540] w-full overflow-hidden bg-dinaseg-gray"
+        aria-label={slide.cta}
+      >
+        {"src" in slide.bg ? (
+          <Image src={slide.bg.src} alt={slide.bg.alt} fill className="object-cover" priority={i === 0} />
+        ) : (
+          <div className="absolute inset-0" style={{ background: slide.bg.gradient }} />
+        )}
+        <SlideContent slideKey={slide.key} />
+      </Link>
 
-      <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      <div className="mx-auto mt-6 flex max-w-6xl flex-col items-center justify-center gap-3 px-4 sm:flex-row">
         <Link
           href={slide.href}
           className="rounded-md bg-dinaseg-red px-6 py-3 font-semibold text-white hover:bg-dinaseg-red-dark"
@@ -71,18 +127,14 @@ export default function HeroCarousel() {
       <div className="mt-6 flex justify-center gap-2">
         {SLIDES.map((s, idx) => (
           <button
-            key={s.href}
+            key={s.key}
             type="button"
             onClick={() => setI(idx)}
-            aria-label={`Ver ${s.titulo}`}
+            aria-label={`Ver slide ${idx + 1}`}
             className={`h-1.5 rounded-full transition-all ${idx === i ? "w-6 bg-dinaseg-red" : "w-1.5 bg-white/40"}`}
           />
         ))}
       </div>
-
-      <style>{`
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-      `}</style>
     </div>
   );
 }
