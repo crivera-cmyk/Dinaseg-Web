@@ -7,15 +7,24 @@ del ERP.
 
 ## Estado (Fase 0 + Fase 1 del plan)
 
-**En producción:** [dinaseg-web.vercel.app](https://dinaseg-web.vercel.app)
-(15-sep-2026). Las 14 páginas de familia que necesita la campaña de Google
-Ads (`marketing/google-ads/` en Dinaseg-ERP) ya funcionan con **catálogo
-real** (99,3% del catálogo del ERP, sincronizado por `server/public-sync.js`
-en Dinaseg-ERP), contenido institucional real (teléfonos, misión, dirección),
-y el formulario de cotización **guarda en Neon y manda correo a
+**🎉 Fase 1 completa, en producción en el dominio real:**
+[www.dinaseg.cl](https://www.dinaseg.cl) (18-sep-2026 — antes en
+`dinaseg-web.vercel.app`, que sigue funcionando como alias). Las 14 páginas
+de familia que necesita la campaña de Google Ads
+(`marketing/google-ads/` en Dinaseg-ERP) ya funcionan con **catálogo real**
+(99,3% del catálogo del ERP, sincronizado por `server/public-sync.js` en
+Dinaseg-ERP), contenido institucional real (teléfonos, misión, dirección), y
+el formulario de cotización **guarda en Neon y manda correo a
 contacto@dinaseg.cl** (SMTP confirmado en vivo, mismo Gmail que ya usa el
-ERP). Falta solo: mover el DNS de `www.dinaseg.cl` y fotos de producto
-(Fase 2, depende de la migración a Cloudflare R2 del ERP).
+ERP). Falta solo fotos de producto (Fase 2, depende de la migración a
+Cloudflare R2 del ERP) y `NEXT_PUBLIC_GTAG_ID` cuando Carlos tenga el ID de
+conversión de Google Ads.
+
+**DNS de `www.dinaseg.cl`:** CNAME a `e099770b43b852af.vercel-dns-017.com`
+(específico de este proyecto — no el genérico `cname.vercel-dns.com`, ver
+más abajo por qué), "DNS only" en Cloudflare (nube gris, sin proxy). El
+dominio raíz `dinaseg.cl` (sin `www`) y el correo (MX/SPF) no se tocaron —
+siguen exactamente igual que antes.
 
 **Nota sobre el repo:** es **público** en GitHub (no privado) — necesario
 porque el plan Hobby de Vercel bloquea el auto-deploy de commits con más de
@@ -66,9 +75,13 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
    [dinaseg-web.vercel.app](https://dinaseg-web.vercel.app).
 3. ~~Crear cuenta de Neon, pasar `DB_URL` a Vercel.~~ ✅ 15-sep-2026 — confirmado
    funcionando de punta a punta (formulario → Neon).
-4. Mover DNS de `www.dinaseg.cl` a Cloudflare apuntando a Vercel.
+4. ~~Mover DNS de `www.dinaseg.cl` a Cloudflare apuntando a Vercel.~~ ✅
+   18-sep-2026 — ver detalle de DNS más arriba y en `PLAN_WEB_PUBLICA.md`.
 5. ~~Implementar `server/public-sync.js` en Dinaseg-ERP.~~ ✅ 15-sep-2026 —
    99,3% del catálogo (6402/6449 productos) sincronizado.
 6. ~~Configurar `SMTP_*`.~~ ✅ 15-sep-2026 — correo de cotización confirmado
-   en vivo. Falta solo `NEXT_PUBLIC_GTAG_ID` (cuando Carlos tenga el ID de
-   Google Ads a mano).
+   en vivo.
+
+**Fase 1 queda completa.** Solo falta `NEXT_PUBLIC_GTAG_ID` (cuando Carlos
+tenga el ID de conversión de Google Ads a mano) y fotos de producto reales
+(Fase 2, depende de la migración a R2 del ERP).
