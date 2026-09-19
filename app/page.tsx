@@ -1,34 +1,23 @@
 import Link from "next/link";
 import { FAMILIES } from "@/lib/families";
 import { SITE } from "@/lib/site";
+import { getFeaturedProducts } from "@/lib/products";
+import HeroCarousel from "@/components/HeroCarousel";
+import ProductActions from "@/components/ProductActions";
 
-export default function Home() {
+// Mismo criterio de refresco que las páginas de familia (ver
+// app/[family]/page.tsx) — los destacados salen del catálogo real.
+export const revalidate = 3600;
+
+export default async function Home() {
+  const destacados = await getFeaturedProducts();
+
   return (
     <div>
-      {/* Hero */}
+      {/* Hero / carrusel de categorías */}
       <section className="bg-dinaseg-gray">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:py-24 text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-dinaseg-red">
-            {SITE.tagline}
-          </p>
-          <h1 className="mx-auto max-w-3xl text-3xl font-extrabold text-white sm:text-5xl">
-            Equipos de Protección Personal para tu empresa
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-zinc-300">{SITE.mision}</p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/cotizar"
-              className="rounded-md bg-dinaseg-red px-6 py-3 font-semibold text-white hover:bg-dinaseg-red-dark"
-            >
-              Cotiza en 24 horas
-            </Link>
-            <a
-              href={`tel:${SITE.telefonos[0].replace(/\s/g, "")}`}
-              className="rounded-md border border-white/30 px-6 py-3 font-semibold text-white hover:bg-white/10"
-            >
-              📞 {SITE.telefonos[0]}
-            </a>
-          </div>
+          <HeroCarousel />
         </div>
       </section>
 
@@ -64,11 +53,36 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Productos destacados — selección representativa del catálogo real
+          (no hay flag de "destacado" en la base todavía, ver lib/products.ts) */}
+      {destacados.length > 0 && (
+        <section className="border-t border-zinc-200 bg-zinc-50">
+          <div className="mx-auto max-w-6xl px-4 py-16">
+            <h2 className="mb-6 text-2xl font-bold text-dinaseg-gray">Productos destacados</h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {destacados.map((p) => (
+                <div key={p.sku} className="rounded-lg border border-zinc-200 bg-white p-4">
+                  <div className="mb-3 flex h-28 items-center justify-center rounded bg-zinc-50 text-xs text-zinc-400">
+                    Foto próximamente
+                  </div>
+                  <p className="text-xs uppercase text-zinc-400">
+                    {FAMILIES.find((f) => f.slug === p.familia)?.nombre}
+                  </p>
+                  <h3 className="mt-0.5 text-sm font-semibold text-dinaseg-gray">{p.nombre}</h3>
+                  <ProductActions sku={p.sku} nombre={p.nombre} familia={p.familia} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* CTA final */}
-      <section className="bg-zinc-50 border-t border-zinc-200">
+      <section className="bg-white border-t border-zinc-200">
         <div className="mx-auto max-w-6xl px-4 py-12 text-center">
           <h2 className="text-2xl font-bold text-dinaseg-gray">¿No encuentras lo que buscas?</h2>
           <p className="mt-2 text-zinc-600">Cuéntanos qué necesitas y te cotizamos sin compromiso.</p>
+          <p className="mx-auto mt-2 max-w-2xl text-sm text-zinc-500">{SITE.mision}</p>
           <Link
             href="/cotizar"
             className="mt-6 inline-block rounded-md bg-dinaseg-red px-6 py-3 font-semibold text-white hover:bg-dinaseg-red-dark"

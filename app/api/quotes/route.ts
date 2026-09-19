@@ -26,8 +26,27 @@ export async function POST(req: NextRequest) {
   const telefono = body.telefono ? String(body.telefono).trim() : undefined;
   const familia = body.familia ? String(body.familia).trim() : undefined;
 
-  if (!nombre || !email || !mensaje) {
-    return NextResponse.json({ error: "Faltan campos obligatorios (nombre, correo, mensaje)" }, { status: 400 });
+  // Items del carrito (app/carrito) — opcional, una cotización "clásica" por
+  // categoría (sin carrito) sigue funcionando igual, solo con mensaje libre.
+  const items = Array.isArray(body.items)
+    ? body.items
+        .map((it) => ({
+          sku: String((it as Record<string, unknown>)?.sku || "").trim(),
+          nombre: String((it as Record<string, unknown>)?.nombre || "").trim(),
+          cantidad: Number((it as Record<string, unknown>)?.cantidad) || 1,
+        }))
+        .filter((it) => it.sku && it.nombre)
+        .slice(0, 50)
+    : [];
+
+  // Con items del carrito, el mensaje pasa a ser opcional (puede venir solo
+  // un comentario corto o nada) — sin items, sigue siendo obligatorio como
+  // siempre (formulario de "Cotizar" clásico).
+  if (!nombre || !email || (!mensaje && items.length === 0)) {
+    return NextResponse.json(
+      { error: "Faltan campos obligatorios (nombre, correo, y mensaje o al menos un producto)" },
+      { status: 400 }
+    );
   }
 
   let guardadoEnBase = false;
@@ -42,13 +61,18 @@ export async function POST(req: NextRequest) {
            email TEXT NOT NULL,
            telefono TEXT,
            familia TEXT,
-           mensaje TEXT NOT NULL,
+           mensaje TEXT NOT NULL DEFAULT '',
+           items JSONB,
            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
          )`
       );
+      // Por si la tabla ya existía de antes de agregar carrito (sin `items`,
+      // y con `mensaje` NOT NULL sin default) — idempotente.
+      await pool?.query(`ALTER TABLE quote_requests ADD COLUMN IF NOT EXISTS items JSONB`);
+      await pool?.query(`ALTER TABLE quote_requests ALTER COLUMN mensaje SET DEFAULT ''`);
       await pool?.query(
-        `INSERT INTO quote_requests (nombre, empresa, email, telefono, familia, mensaje) VALUES ($1,$2,$3,$4,$5,$6)`,
-        [nombre, empresa || null, email, telefono || null, familia || null, mensaje]
+        `INSERT INTO quote_requests (nombre, empresa, email, telefono, familia, mensaje, items) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+        [nombre, empresa || null, email, telefono || null, familia || null, mensaje, items.length ? JSON.stringify(items) : null]
       );
       guardadoEnBase = true;
     } catch (e) {
@@ -58,7 +82,7 @@ export async function POST(req: NextRequest) {
 
   let correoEnviado = false;
   try {
-    const r = await enviarCorreoCotizacion({ nombre, empresa, email, telefono, familia, mensaje });
+    const r = await enviarCorreoCotizacion({ nombre, empresa, email, telefono, familia, mensaje, items });
     correoEnviado = r.enviado;
   } catch (e) {
     console.error("[api/quotes] Error enviando correo:", (e as Error).message);
@@ -75,6 +99,7 @@ export async function POST(req: NextRequest) {
       telefono,
       familia,
       mensaje,
+      items,
     });
   }
 

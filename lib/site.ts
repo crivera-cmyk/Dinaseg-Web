@@ -11,4 +11,10 @@ export const SITE = {
   direccion: "Av. El Ventisquero 1111, Renca, Santiago, Chile",
   email: "contacto@dinaseg.cl",
   urlBase: "https://www.dinaseg.cl",
+  // Instagram real confirmado (@dinaseg_, cuenta activa). Facebook: por ahora
+  // no se usa (decisión de Carlos, 18-sep-2026) — no agregar sin confirmar.
+  instagram: "https://www.instagram.com/dinaseg_/",
+  // Mismo celular que ya aparece como tercer teléfono — elegido por Carlos
+  // para el botón de WhatsApp (chat directo, no "compartir").
+  whatsapp: "56998297065",
 };

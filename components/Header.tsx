@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { FAMILIES } from "@/lib/families";
 import { SITE } from "@/lib/site";
+import { useCart } from "@/lib/cart";
 
 export default function Header() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [familiasAbierto, setFamiliasAbierto] = useState(false);
+  const { total } = useCart();
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white">
@@ -60,6 +62,14 @@ export default function Header() {
           <Link href="/contacto" className="hover:text-dinaseg-red">
             Contacto
           </Link>
+          <Link href="/carrito" className="relative hover:text-dinaseg-red" aria-label="Carrito">
+            🛒
+            {total > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-dinaseg-red text-[10px] font-bold text-white">
+                {total}
+              </span>
+            )}
+          </Link>
           <Link
             href="/cotizar"
             className="rounded-md bg-dinaseg-red px-4 py-2 font-semibold text-white hover:bg-dinaseg-red-dark"
@@ -97,6 +107,13 @@ export default function Header() {
           <div className="flex flex-col gap-2 border-t border-zinc-200 pt-3">
             <Link href="/contacto" className="text-sm font-medium text-dinaseg-gray" onClick={() => setMenuAbierto(false)}>
               Contacto
+            </Link>
+            <Link
+              href="/carrito"
+              className="text-sm font-medium text-dinaseg-gray"
+              onClick={() => setMenuAbierto(false)}
+            >
+              🛒 Carrito {total > 0 ? `(${total})` : ""}
             </Link>
             <Link
               href="/cotizar"

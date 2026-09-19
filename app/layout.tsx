@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import GoogleTag from "@/components/GoogleTag";
+import WhatsAppButton from "@/components/WhatsAppButton";
+import CompareBar, { CompareBarSpacer } from "@/components/CompareBar";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -38,6 +40,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <CompareBarSpacer />
+        <WhatsAppButton />
+        <CompareBar />
       </body>
     </html>
   );

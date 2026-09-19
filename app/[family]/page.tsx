@@ -6,6 +6,7 @@ import { FAMILIES, getFamily } from "@/lib/families";
 import { getProductsByFamily } from "@/lib/products";
 import { SITE } from "@/lib/site";
 import QuoteForm from "@/components/QuoteForm";
+import ProductActions from "@/components/ProductActions";
 
 // El catálogo se sincroniza desde el ERP una vez al día (cron 02:15) más
 // corridas manuales tras cada import de precios — sin esto, Next.js sirve
@@ -98,6 +99,7 @@ export default async function FamilyPage({ params }: { params: Promise<{ family:
                   )}
                 </div>
                 <h3 className="text-sm font-semibold text-dinaseg-gray">{p.nombre}</h3>
+                <ProductActions sku={p.sku} nombre={p.nombre} familia={p.familia} />
               </div>
             ))}
           </div>
