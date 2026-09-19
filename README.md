@@ -54,17 +54,30 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
 - `app/[family]/page.tsx` — las 14 páginas de familia (slugs fijos, no
   renombrar sin actualizar también la campaña de Ads).
 - `app/cotizar`, `app/contacto` — páginas de las sitelinks de la campaña.
-- `app/api/quotes/route.ts` — recibe el formulario de cotización.
+- `app/carrito` — carrito (localStorage, `lib/cart.ts`) → envía todo como
+  UNA cotización a `/api/quotes` (campo `items`, sin pago online todavía).
+- `app/comparar` — comparador (localStorage, `lib/compare.ts`), hasta 4
+  productos, reflejado en la URL (`?sku=a,b`) para poder compartirla; trae
+  los datos por `/api/products?skus=...`.
+- `app/api/quotes/route.ts` — recibe el formulario de cotización, con o sin
+  `items` del carrito (columna `items` JSONB en `quote_requests`).
+- `app/api/newsletter/route.ts` — suscripción simple (tabla
+  `newsletter_subscribers` en Neon, sin ESP conectado todavía — Fase 3).
 - `lib/families.ts` — las 14 familias canónicas (mismos slugs/nombres que
   `marketing/google-ads/ads_rsa.csv` en Dinaseg-ERP).
-- `lib/site.ts` — datos institucionales reales (teléfonos, misión, dirección).
+- `lib/site.ts` — datos institucionales reales (teléfonos, misión, dirección,
+  Instagram `@dinaseg_`, WhatsApp).
 - `lib/products.ts` — lee catálogo de la tabla `public_products` en Neon,
   poblada por `server/public-sync.js` en Dinaseg-ERP (ya implementado y
   sincronizando — 99,3% del catálogo real). Si esa tabla estuviera vacía,
   esta función devuelve `[]` y las páginas muestran contenido institucional
   en su lugar (degradación, no debería pasar en producción normalmente).
+  También `getProductsBySkus` (comparador) y `getFeaturedProducts` (home).
 - `lib/db.ts` / `lib/mailer.ts` — conexión a Neon y envío de correo, ambos
   con degradación segura si las variables de entorno no están configuradas.
+- `components/HeroCarousel.tsx`, `WhatsAppButton.tsx`, `NewsletterForm.tsx`,
+  `ProductActions.tsx` (agregar/comparar en cada tarjeta), `CompareBar.tsx`
+  (barra fija con lo que se está comparando).
 
 ## Pendiente para Fase 1 completa (ver PLAN_WEB_PUBLICA.md)
 
@@ -85,3 +98,19 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
 **Fase 1 queda completa.** Solo falta `NEXT_PUBLIC_GTAG_ID` (cuando Carlos
 tenga el ID de conversión de Google Ads a mano) y fotos de producto reales
 (Fase 2, depende de la migración a R2 del ERP).
+
+## Agregados post-Fase 1 (18-sep-2026, a pedido de Carlos)
+
+Funcionalidades del sitio viejo (v2nets) traídas al nuevo, con datos reales
+confirmados (no placeholder): carrusel de categorías en el home, productos
+destacados, Instagram (`@dinaseg_`, sin Facebook por ahora — decisión de
+Carlos), botón flotante de WhatsApp, newsletter, y **carrito + comparador**
+(sin pago online — decisión explícita de Carlos: "las dos, pero en etapas",
+carrito+cotización ahora, Webpay/Transbank más adelante como fase aparte).
+
+**🔴 Bug real encontrado y arreglado en el camino:** el comparador entraba
+en loop infinito golpeando `/api/products` sin parar. Causa: `skus` (de
+`useCompare()`) es un array nuevo en cada render; usarlo tal cual como
+dependencia de `useEffect` reinicia el efecto en cada render aunque el
+contenido sea idéntico. Arreglado usando `skus.join(",")` (string estable)
+como dependencia en vez del array.
