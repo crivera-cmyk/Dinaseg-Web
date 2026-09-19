@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { FAMILIES } from "@/lib/families";
 import { SITE } from "@/lib/site";
 import { getFeaturedProducts } from "@/lib/products";
@@ -62,7 +63,11 @@ export default async function Home() {
               {destacados.map((p) => (
                 <div key={p.sku} className="rounded-lg border border-zinc-200 bg-white p-4">
                   <div className="mb-3 flex h-28 items-center justify-center rounded bg-zinc-50 text-xs text-zinc-400">
-                    Foto próximamente
+                    {p.imagenUrl ? (
+                      <Image src={p.imagenUrl} alt={p.nombre} width={160} height={112} className="h-28 w-full object-contain" />
+                    ) : (
+                      "Foto próximamente"
+                    )}
                   </div>
                   <p className="text-xs uppercase text-zinc-400">
                     {FAMILIES.find((f) => f.slug === p.familia)?.nombre}
