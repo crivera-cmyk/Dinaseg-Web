@@ -73,6 +73,14 @@ export default async function Home() {
                     {FAMILIES.find((f) => f.slug === p.familia)?.nombre}
                   </p>
                   <h3 className="mt-0.5 text-sm font-semibold text-dinaseg-gray">{p.nombre}</h3>
+                  {p.fichaTecnicaUrl && (
+                    <a
+                      href={p.fichaTecnicaUrl}
+                      className="mt-1 inline-flex items-center gap-1 text-xs text-dinaseg-red hover:underline"
+                    >
+                      📄 Ficha técnica
+                    </a>
+                  )}
                   <ProductActions sku={p.sku} nombre={p.nombre} familia={p.familia} />
                 </div>
               ))}

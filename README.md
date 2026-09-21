@@ -61,7 +61,8 @@ sin `SMTP_*` las cotizaciones quedan solo en el log del servidor (ver
   los datos por `/api/products?skus=...`.
 - `app/api/quotes/route.ts` — recibe el formulario de cotización, con o sin
   `items` del carrito (columna `items` JSONB en `quote_requests`).
-- `app/api/newsletter/route.ts` — suscripción simple (tabla
+- `app/api/boletin/route.ts` (antes `/api/newsletter`, renombrado 20-sep-2026
+  por posible bloqueo de ad-blockers) — suscripción simple (tabla
   `newsletter_subscribers` en Neon, sin ESP conectado todavía — Fase 3).
 - `lib/families.ts` — las 14 familias canónicas (mismos slugs/nombres que
   `marketing/google-ads/ads_rsa.csv` en Dinaseg-ERP).

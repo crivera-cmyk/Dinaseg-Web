@@ -99,6 +99,14 @@ export default async function FamilyPage({ params }: { params: Promise<{ family:
                   )}
                 </div>
                 <h3 className="text-sm font-semibold text-dinaseg-gray">{p.nombre}</h3>
+                {p.fichaTecnicaUrl && (
+                  <a
+                    href={p.fichaTecnicaUrl}
+                    className="mt-1 inline-flex items-center gap-1 text-xs text-dinaseg-red hover:underline"
+                  >
+                    📄 Ficha técnica
+                  </a>
+                )}
                 <ProductActions sku={p.sku} nombre={p.nombre} familia={p.familia} />
               </div>
             ))}

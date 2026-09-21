@@ -4,21 +4,29 @@ import { useState } from "react";
 
 export default function NewsletterForm() {
   const [estado, setEstado] = useState<"listo" | "enviando" | "ok" | "error">("listo");
+  const [errorMsg, setErrorMsg] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setEstado("enviando");
     const email = new FormData(e.currentTarget).get("email");
     try {
-      const r = await fetch("/api/newsletter", {
+      const r = await fetch("/api/boletin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      if (!r.ok) throw new Error();
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.error || `HTTP ${r.status}`);
+      }
       setEstado("ok");
       e.currentTarget.reset();
-    } catch {
+    } catch (err) {
+      // Si esto sigue fallando en el navegador de Carlos, el mensaje acá
+      // ayuda a distinguir un bloqueador de ads (TypeError: Failed to fetch,
+      // sin llegar nunca al servidor) de un error real del servidor.
+      setErrorMsg(err instanceof Error ? err.message : "Error desconocido");
       setEstado("error");
     }
   }
@@ -43,7 +51,12 @@ export default function NewsletterForm() {
       >
         {estado === "enviando" ? "..." : "Suscribirme"}
       </button>
-      {estado === "error" && <p className="text-xs text-red-600">No se pudo suscribir, probá de nuevo.</p>}
+      {estado === "error" && (
+        <p className="text-xs text-red-600">
+          No se pudo suscribir ({errorMsg}). Si tienes un bloqueador de anuncios activado, desactívalo para este
+          sitio e inténtalo de nuevo.
+        </p>
+      )}
     </form>
   );
 }

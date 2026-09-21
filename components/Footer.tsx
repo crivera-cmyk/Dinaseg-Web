@@ -78,7 +78,7 @@ export default function Footer() {
         <div className="mx-auto flex max-w-6xl flex-col items-start gap-3 px-4 py-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h3 className="text-sm font-semibold text-dinaseg-gray">Novedades y ofertas</h3>
-            <p className="text-xs text-zinc-500">Suscribite para enterarte de nuevos productos y promociones.</p>
+            <p className="text-xs text-zinc-500">Suscríbete para enterarte de nuevos productos y promociones.</p>
           </div>
           <div className="w-full sm:w-80">
             <NewsletterForm />

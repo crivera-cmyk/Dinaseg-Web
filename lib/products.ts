@@ -4,11 +4,12 @@
 //
 // Contrato esperado de la tabla `public_products` que ese script debe
 // llenar (columnas mínimas que esta función necesita):
-//   sku          TEXT PRIMARY KEY
-//   nombre       TEXT NOT NULL
-//   familia      TEXT NOT NULL   -- uno de los 14 slugs de lib/families.ts
-//   descripcion  TEXT
-//   imagen_url   TEXT            -- NULL si no hay foto todavía (se usa placeholder)
+//   sku                TEXT PRIMARY KEY
+//   nombre             TEXT NOT NULL
+//   familia            TEXT NOT NULL   -- uno de los 14 slugs de lib/families.ts
+//   descripcion        TEXT
+//   imagen_url         TEXT            -- NULL si no hay foto todavía (se usa placeholder)
+//   ficha_tecnica_url  TEXT            -- NULL si no hay PDF de ficha técnica cargado
 //
 // Mientras esa tabla no exista o DB_URL no esté configurada, esta
 // función devuelve [] y las páginas de familia muestran el contenido
@@ -21,6 +22,7 @@ export type PublicProduct = {
   familia: string;
   descripcion: string | null;
   imagenUrl: string | null;
+  fichaTecnicaUrl: string | null;
 };
 
 function mapRow(r: {
@@ -29,6 +31,7 @@ function mapRow(r: {
   familia: string;
   descripcion: string | null;
   imagen_url: string | null;
+  ficha_tecnica_url: string | null;
 }): PublicProduct {
   return {
     sku: r.sku,
@@ -36,6 +39,7 @@ function mapRow(r: {
     familia: r.familia,
     descripcion: r.descripcion,
     imagenUrl: r.imagen_url,
+    fichaTecnicaUrl: r.ficha_tecnica_url,
   };
 }
 
@@ -49,7 +53,7 @@ export async function getProductsByFamily(slug: string): Promise<PublicProduct[]
     // ordenar solo por nombre los dejaba enterrados pasado el LIMIT 24 en
     // categorías con muchos productos (ej. cascos: 111 en total).
     const { rows } = await pool.query(
-      `SELECT sku, nombre, familia, descripcion, imagen_url FROM public_products
+      `SELECT sku, nombre, familia, descripcion, imagen_url, ficha_tecnica_url FROM public_products
         WHERE familia = $1
         ORDER BY (imagen_url IS NOT NULL) DESC, nombre
         LIMIT 24`,
@@ -71,7 +75,7 @@ export async function getProductsBySkus(skus: string[]): Promise<PublicProduct[]
 
   try {
     const { rows } = await pool.query(
-      `SELECT sku, nombre, familia, descripcion, imagen_url FROM public_products WHERE sku = ANY($1) LIMIT 4`,
+      `SELECT sku, nombre, familia, descripcion, imagen_url, ficha_tecnica_url FROM public_products WHERE sku = ANY($1) LIMIT 4`,
       [skus]
     );
     return rows.map(mapRow);
@@ -94,7 +98,7 @@ export async function getFeaturedProducts(): Promise<PublicProduct[]> {
 
   try {
     const { rows } = await pool.query(`
-      SELECT sku, nombre, familia, descripcion, imagen_url FROM (
+      SELECT sku, nombre, familia, descripcion, imagen_url, ficha_tecnica_url FROM (
         SELECT *, ROW_NUMBER() OVER (
           PARTITION BY familia ORDER BY (imagen_url IS NOT NULL) DESC, nombre
         ) AS rn

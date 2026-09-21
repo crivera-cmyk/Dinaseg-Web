@@ -130,6 +130,20 @@ function ComparadorInner() {
                 ))}
               </tr>
               <tr>
+                <td className="border-b border-zinc-100 p-3 font-medium text-zinc-500">Ficha técnica</td>
+                {productos.map((p) => (
+                  <td key={p.sku} className="border-b border-zinc-100 p-3">
+                    {p.fichaTecnicaUrl ? (
+                      <a href={p.fichaTecnicaUrl} className="text-dinaseg-red hover:underline">
+                        📄 Descargar
+                      </a>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
+                ))}
+              </tr>
+              <tr>
                 <td className="p-3"></td>
                 {productos.map((p) => (
                   <td key={p.sku} className="p-3">
@@ -149,8 +163,8 @@ function ComparadorInner() {
       )}
 
       <p className="mt-8 text-xs text-zinc-400">
-        Nota: todavía no tenemos fichas técnicas ni fotos cargadas para el comparador — por ahora muestra los datos
-        básicos disponibles. Para el detalle completo, cotizá el producto y te asesoramos directo.
+        Nota: todavía no tenemos fotos cargadas para todo el catálogo — por ahora muestra los datos básicos
+        disponibles. Para el detalle completo, cotizá el producto y te asesoramos directo.
       </p>
     </div>
   );
