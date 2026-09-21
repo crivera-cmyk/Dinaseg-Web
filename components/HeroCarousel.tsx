@@ -95,13 +95,14 @@ export default function HeroCarousel() {
   const slide = SLIDES[i];
 
   return (
-    // El CTA/dots van SUPERPUESTOS sobre la imagen (con velo degradado abajo
-    // para que el texto blanco se lea), no en una franja gris aparte debajo
-    // — antes quedaban fuera de la imagen y en pantallas angostas la imagen
-    // (banda ancha, aspect-[1903/540]) se veía como una tira finita con un
-    // cuadro gris grande abajo tapando casi todo (reportado por Carlos con
-    // captura, 21-sep-2026).
-    <div className="relative aspect-[1903/540] w-full overflow-hidden bg-dinaseg-gray">
+    // Banner limpio, sin botones ni velo encima — Carlos pidió sacarlos
+    // (21-sep-2026): el banner entero es un link a la categoría del slide,
+    // y solo quedan los puntitos de abajo para cambiar de slide a mano.
+    <Link
+      href={slide.href}
+      aria-label={slide.cta}
+      className="relative block aspect-[1903/540] w-full overflow-hidden bg-dinaseg-gray"
+    >
       {"src" in slide.bg ? (
         <Image src={slide.bg.src} alt={slide.bg.alt} fill className="object-cover" priority={i === 0} />
       ) : (
@@ -109,34 +110,20 @@ export default function HeroCarousel() {
       )}
       <SlideContent slideKey={slide.key} />
 
-      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-10 pb-3 sm:pb-4">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 sm:flex-row sm:gap-3">
-          <Link
-            href={slide.href}
-            className="rounded-md bg-dinaseg-red px-4 py-2 text-xs font-semibold text-white hover:bg-dinaseg-red-dark sm:px-6 sm:py-3 sm:text-base"
-          >
-            {slide.cta}
-          </Link>
-          <Link
-            href="/cotizar"
-            className="rounded-md border border-white/50 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 sm:px-6 sm:py-3 sm:text-base"
-          >
-            Cotiza en 24 horas
-          </Link>
-        </div>
-
-        <div className="mt-2 flex justify-center gap-2 sm:mt-3">
-          {SLIDES.map((s, idx) => (
-            <button
-              key={s.key}
-              type="button"
-              onClick={() => setI(idx)}
-              aria-label={`Ver slide ${idx + 1}`}
-              className={`h-1.5 rounded-full transition-all ${idx === i ? "w-6 bg-dinaseg-red" : "w-1.5 bg-white/50"}`}
-            />
-          ))}
-        </div>
+      <div className="absolute inset-x-0 bottom-2 flex justify-center gap-2 sm:bottom-4">
+        {SLIDES.map((s, idx) => (
+          <button
+            key={s.key}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setI(idx);
+            }}
+            aria-label={`Ver slide ${idx + 1}`}
+            className={`h-1.5 rounded-full shadow transition-all ${idx === i ? "w-6 bg-dinaseg-red" : "w-1.5 bg-white/70"}`}
+          />
+        ))}
       </div>
-    </div>
+    </Link>
   );
 }

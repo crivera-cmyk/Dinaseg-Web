@@ -121,6 +121,14 @@ export async function getProductsBySkus(skus: string[]): Promise<PublicProduct[]
  * 15-sep-2026 — Vestuario/Calzado/Manos son las de más catálogo real).
  * No hay flag de "destacado" en la base — es una selección representativa,
  * no curada a mano, hasta que exista ese campo.
+ *
+ * `random()` en vez de `nombre` (21-sep-2026, pedido de Carlos): con
+ * `ORDER BY nombre` el "top 2 con foto" de cada familia era siempre el
+ * mismo par en cada carga — hoy son casi siempre productos Aquiles porque
+ * son de los pocos con foto real cargada todavía, así que el home mostraba
+ * siempre lo mismo. Con `random()` se recambia (la página se revalida cada
+ * 1h vía ISR — ver `revalidate` en app/page.tsx), pero se sigue priorizando
+ * tener foto sobre no tenerla.
  */
 export async function getFeaturedProducts(): Promise<PublicProduct[]> {
   const pool = getPool();
@@ -131,7 +139,7 @@ export async function getFeaturedProducts(): Promise<PublicProduct[]> {
     const { rows } = await pool.query(`
       SELECT sku, nombre, familia, descripcion, imagen_url, ficha_tecnica_url FROM (
         SELECT *, ROW_NUMBER() OVER (
-          PARTITION BY familia ORDER BY (imagen_url IS NOT NULL) DESC, nombre
+          PARTITION BY familia ORDER BY (imagen_url IS NOT NULL) DESC, random()
         ) AS rn
         FROM public_products
         WHERE familia IN ('vestuario', 'calzado-seguridad', 'proteccion-manos', 'cascos-seguridad')
