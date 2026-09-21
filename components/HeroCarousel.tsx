@@ -95,45 +95,47 @@ export default function HeroCarousel() {
   const slide = SLIDES[i];
 
   return (
-    <div>
-      <Link
-        href={slide.href}
-        className="relative block aspect-[1903/540] w-full overflow-hidden bg-dinaseg-gray"
-        aria-label={slide.cta}
-      >
-        {"src" in slide.bg ? (
-          <Image src={slide.bg.src} alt={slide.bg.alt} fill className="object-cover" priority={i === 0} />
-        ) : (
-          <div className="absolute inset-0" style={{ background: slide.bg.gradient }} />
-        )}
-        <SlideContent slideKey={slide.key} />
-      </Link>
+    // El CTA/dots van SUPERPUESTOS sobre la imagen (con velo degradado abajo
+    // para que el texto blanco se lea), no en una franja gris aparte debajo
+    // — antes quedaban fuera de la imagen y en pantallas angostas la imagen
+    // (banda ancha, aspect-[1903/540]) se veía como una tira finita con un
+    // cuadro gris grande abajo tapando casi todo (reportado por Carlos con
+    // captura, 21-sep-2026).
+    <div className="relative aspect-[1903/540] w-full overflow-hidden bg-dinaseg-gray">
+      {"src" in slide.bg ? (
+        <Image src={slide.bg.src} alt={slide.bg.alt} fill className="object-cover" priority={i === 0} />
+      ) : (
+        <div className="absolute inset-0" style={{ background: slide.bg.gradient }} />
+      )}
+      <SlideContent slideKey={slide.key} />
 
-      <div className="mx-auto mt-6 flex max-w-6xl flex-col items-center justify-center gap-3 px-4 sm:flex-row">
-        <Link
-          href={slide.href}
-          className="rounded-md bg-dinaseg-red px-6 py-3 font-semibold text-white hover:bg-dinaseg-red-dark"
-        >
-          {slide.cta}
-        </Link>
-        <Link
-          href="/cotizar"
-          className="rounded-md border border-white/30 px-6 py-3 font-semibold text-white hover:bg-white/10"
-        >
-          Cotiza en 24 horas
-        </Link>
-      </div>
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent pt-10 pb-3 sm:pb-4">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-center gap-2 px-4 sm:flex-row sm:gap-3">
+          <Link
+            href={slide.href}
+            className="rounded-md bg-dinaseg-red px-4 py-2 text-xs font-semibold text-white hover:bg-dinaseg-red-dark sm:px-6 sm:py-3 sm:text-base"
+          >
+            {slide.cta}
+          </Link>
+          <Link
+            href="/cotizar"
+            className="rounded-md border border-white/50 px-4 py-2 text-xs font-semibold text-white hover:bg-white/10 sm:px-6 sm:py-3 sm:text-base"
+          >
+            Cotiza en 24 horas
+          </Link>
+        </div>
 
-      <div className="mt-6 flex justify-center gap-2">
-        {SLIDES.map((s, idx) => (
-          <button
-            key={s.key}
-            type="button"
-            onClick={() => setI(idx)}
-            aria-label={`Ver slide ${idx + 1}`}
-            className={`h-1.5 rounded-full transition-all ${idx === i ? "w-6 bg-dinaseg-red" : "w-1.5 bg-white/40"}`}
-          />
-        ))}
+        <div className="mt-2 flex justify-center gap-2 sm:mt-3">
+          {SLIDES.map((s, idx) => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setI(idx)}
+              aria-label={`Ver slide ${idx + 1}`}
+              className={`h-1.5 rounded-full transition-all ${idx === i ? "w-6 bg-dinaseg-red" : "w-1.5 bg-white/50"}`}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

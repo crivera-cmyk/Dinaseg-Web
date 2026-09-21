@@ -6,6 +6,7 @@ import { useState } from "react";
 import { FAMILIES } from "@/lib/families";
 import { SITE } from "@/lib/site";
 import { useCart } from "@/lib/cart";
+import SearchBox from "./SearchBox";
 
 export default function Header() {
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -34,6 +35,14 @@ export default function Header() {
         <Link href="/" className="flex items-center shrink-0">
           <Image src="/images/logo.png" alt="Dinaseg" width={56} height={56} className="h-14 w-14" priority />
         </Link>
+
+        {/* Buscador — a pedido de Carlos, 21-sep-2026: el catálogo tiene
+            miles de productos y cada categoría solo muestra los primeros 24,
+            así que un producto real (ej. Panama Jack) podía no verse en su
+            categoría. El buscador consulta TODO el catálogo por nombre/SKU. */}
+        <div className="hidden lg:block w-64">
+          <SearchBox compact />
+        </div>
 
         {/* Nav escritorio */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-dinaseg-gray">
@@ -92,6 +101,9 @@ export default function Header() {
       {/* Nav móvil */}
       {menuAbierto && (
         <nav className="md:hidden border-t border-zinc-200 bg-white px-4 py-3">
+          <div className="mb-3">
+            <SearchBox compact initialQuery="" />
+          </div>
           <p className="mb-1 text-xs font-semibold uppercase text-zinc-400">Productos</p>
           <div className="mb-3 grid grid-cols-2 gap-1">
             {FAMILIES.map((f) => (

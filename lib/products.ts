@@ -69,6 +69,34 @@ export async function getProductsByFamily(slug: string): Promise<PublicProduct[]
   }
 }
 
+/**
+ * Buscador del sitio (app/buscar) — a pedido de Carlos, 21-sep-2026: sin
+ * esto un producto real (ej. Panama Jack) podía existir en el catálogo pero
+ * no aparecer en su categoría si no tenía foto y quedaba fuera del LIMIT 24
+ * de getProductsByFamily. Busca por nombre O sku en TODO el catálogo, sin
+ * límite de familia ni de foto.
+ */
+export async function searchProducts(query: string): Promise<PublicProduct[]> {
+  const pool = getPool();
+  const q = query.trim();
+  if (!pool || !q) return [];
+
+  try {
+    await ensurePublicProductsSchema();
+    const { rows } = await pool.query(
+      `SELECT sku, nombre, familia, descripcion, imagen_url, ficha_tecnica_url FROM public_products
+        WHERE nombre ILIKE $1 OR sku ILIKE $1
+        ORDER BY (imagen_url IS NOT NULL) DESC, nombre
+        LIMIT 60`,
+      [`%${q}%`]
+    );
+    return rows.map(mapRow);
+  } catch (e) {
+    console.warn("[products] No se pudo buscar en public_products:", (e as Error).message);
+    return [];
+  }
+}
+
 /** Para el comparador (app/comparar) — trae hasta 4 productos por SKU exacto. */
 export async function getProductsBySkus(skus: string[]): Promise<PublicProduct[]> {
   const pool = getPool();

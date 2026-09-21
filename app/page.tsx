@@ -16,10 +16,9 @@ export default async function Home() {
   return (
     <div>
       {/* Hero / carrusel de categorías — la imagen va de punta a punta (como
-          los banners del sitio anterior), el CTA/dots quedan centrados adentro. */}
-      <section className="bg-dinaseg-gray py-6 sm:py-10">
-        <HeroCarousel />
-      </section>
+          los banners del sitio anterior), el CTA/dots quedan superpuestos
+          adentro de la imagen (ver HeroCarousel), sin franja gris aparte. */}
+      <HeroCarousel />
 
       {/* Beneficios (mismos que la campaña de Ads, para consistencia de mensaje) */}
       <section className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 text-center sm:grid-cols-4">
