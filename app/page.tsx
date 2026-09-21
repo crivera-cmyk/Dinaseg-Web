@@ -5,6 +5,7 @@ import { SITE } from "@/lib/site";
 import { getFeaturedProducts } from "@/lib/products";
 import HeroCarousel from "@/components/HeroCarousel";
 import ProductActions from "@/components/ProductActions";
+import PromoBanners from "@/components/PromoBanners";
 
 // Dinámica, sin ISR (21-sep-2026): getFeaturedProducts() elige al azar
 // entre los productos con foto de cada familia (ver lib/products.ts) para
@@ -93,6 +94,10 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      {/* Banners de marca + "Registra tu empresa" — sección real del sitio
+          viejo (dinaseg.cl), traída a pedido de Carlos. Ver PromoBanners. */}
+      <PromoBanners />
 
       {/* CTA final */}
       <section className="bg-white border-t border-zinc-200">

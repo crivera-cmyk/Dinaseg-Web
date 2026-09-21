@@ -59,3 +59,51 @@ export async function enviarCorreoCotizacion(datos: {
 
   return { enviado: true };
 }
+
+/**
+ * "Registra tu empresa y obtén más descuentos" — mismo CTA que tenía el
+ * sitio viejo (WooCommerce, apuntaba a /mi-cuenta/), pero acá sin sistema
+ * de cuentas propio: es un formulario de datos de la empresa que le llega a
+ * Carlos por correo (y queda guardado en `company_registrations`, ver
+ * app/api/company-register/route.ts) para que ofrezca el descuento a mano
+ * — no hay generación automática de códigos de descuento todavía.
+ */
+export async function enviarCorreoRegistroEmpresa(datos: {
+  empresa: string;
+  rut?: string;
+  contacto: string;
+  email: string;
+  telefono?: string;
+  rubro?: string;
+}) {
+  if (!mailConfigurado()) {
+    console.warn("[mailer] SMTP no configurado todavía — registro de empresa solo queda guardado, no se envía correo.");
+    return { enviado: false };
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: false,
+    auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
+  });
+
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM || process.env.SMTP_USER,
+    to: process.env.SMTP_FROM || process.env.SMTP_USER,
+    replyTo: datos.email,
+    subject: `Nueva empresa registrada (descuentos) — ${datos.empresa}`,
+    text: [
+      `Empresa: ${datos.empresa}`,
+      datos.rut ? `RUT: ${datos.rut}` : null,
+      `Contacto: ${datos.contacto}`,
+      `Correo: ${datos.email}`,
+      datos.telefono ? `Teléfono: ${datos.telefono}` : null,
+      datos.rubro ? `Rubro: ${datos.rubro}` : null,
+    ]
+      .filter((l) => l !== null)
+      .join("\n"),
+  });
+
+  return { enviado: true };
+}
