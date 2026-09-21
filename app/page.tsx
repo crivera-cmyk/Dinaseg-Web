@@ -6,9 +6,15 @@ import { getFeaturedProducts } from "@/lib/products";
 import HeroCarousel from "@/components/HeroCarousel";
 import ProductActions from "@/components/ProductActions";
 
-// Mismo criterio de refresco que las páginas de familia (ver
-// app/[family]/page.tsx) — los destacados salen del catálogo real.
-export const revalidate = 3600;
+// Dinámica, sin ISR (21-sep-2026): getFeaturedProducts() elige al azar
+// entre los productos con foto de cada familia (ver lib/products.ts) para
+// no mostrar siempre el mismo par — pero con `revalidate` (ISR) esa
+// elección quedaba CONGELADA hasta la próxima regeneración (1h o el
+// siguiente deploy), así que si le tocaba un par de Aquiles se quedaba fija
+// esa hora aunque Carlos recargara la página. Con force-dynamic cada visita
+// vuelve a tirar el dado. Costo: una consulta a Neon por visita a home, que
+// para el tráfico actual del sitio no es problema.
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const destacados = await getFeaturedProducts();
