@@ -21,7 +21,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.urlBase),
   title: {
-    default: `${SITE.nombre} — Equipos de Protección Personal (EPP) para empresas`,
+    // Pedido de Carlos, 21-sep-2026: en la pestaña del navegador se veía
+    // "Dinaseg —" cortado (título largo) y con el ícono genérico de Next.js
+    // en vez del logo real (favicon.ico quedó desactualizado del logo
+    // viejo cuando se cambió public/images/logo.png el 20-sep — son
+    // archivos separados, ver app/favicon.ico regenerado desde app/icon.png).
+    default: `${SITE.nombre} - Seguridad Industrial`,
     template: `%s — ${SITE.nombre}`,
   },
   description: SITE.mision,
