@@ -14,7 +14,7 @@
 // Mientras esa tabla no exista o DB_URL no esté configurada, esta
 // función devuelve [] y las páginas de familia muestran el contenido
 // institucional (intro + destacados) en vez de una grilla vacía o rota.
-import { getPool } from "./db";
+import { getPool, ensurePublicProductsSchema } from "./db";
 
 export type PublicProduct = {
   sku: string;
@@ -48,6 +48,7 @@ export async function getProductsByFamily(slug: string): Promise<PublicProduct[]
   if (!pool) return [];
 
   try {
+    await ensurePublicProductsSchema();
     // Con foto real primero: hoy (19-sep-2026) solo 4 de ~6400 productos
     // tienen foto cargada (ver server/public-sync.js en Dinaseg-ERP) —
     // ordenar solo por nombre los dejaba enterrados pasado el LIMIT 24 en
@@ -74,6 +75,7 @@ export async function getProductsBySkus(skus: string[]): Promise<PublicProduct[]
   if (!pool || skus.length === 0) return [];
 
   try {
+    await ensurePublicProductsSchema();
     const { rows } = await pool.query(
       `SELECT sku, nombre, familia, descripcion, imagen_url, ficha_tecnica_url FROM public_products WHERE sku = ANY($1) LIMIT 4`,
       [skus]
@@ -97,6 +99,7 @@ export async function getFeaturedProducts(): Promise<PublicProduct[]> {
   if (!pool) return [];
 
   try {
+    await ensurePublicProductsSchema();
     const { rows } = await pool.query(`
       SELECT sku, nombre, familia, descripcion, imagen_url, ficha_tecnica_url FROM (
         SELECT *, ROW_NUMBER() OVER (

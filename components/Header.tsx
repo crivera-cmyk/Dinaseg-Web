@@ -27,11 +27,12 @@ export default function Header() {
       </div>
 
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <Image src="/images/logo.png" alt="Dinaseg" width={40} height={40} className="h-10 w-10" priority />
-          <span className="text-lg font-extrabold tracking-tight text-dinaseg-gray">
-            DINA<span className="text-dinaseg-red">SEG</span>
-          </span>
+        {/* El PNG ya trae el nombre "DINASEG" integrado bajo el ícono (mismo
+            archivo que el sitio institucional en dinaseg.cl) — antes se
+            mostraba el ícono solo + un "DINASEG" tipeado aparte, que no
+            calzaba con la marca real (pedido de Carlos, 20-sep-2026). */}
+        <Link href="/" className="flex items-center shrink-0">
+          <Image src="/images/logo.png" alt="Dinaseg" width={56} height={56} className="h-14 w-14" priority />
         </Link>
 
         {/* Nav escritorio */}

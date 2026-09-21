@@ -8,8 +8,18 @@ export default function NewsletterForm() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // React vacía los campos del SyntheticEvent (incluido currentTarget)
+    // apenas termina este handler — como acá hay un `await` de por medio,
+    // para cuando la respuesta vuelve `e.currentTarget` ya es `null`. Por
+    // eso el envío SÍ llegaba a guardarse pero el formulario igual mostraba
+    // "no se pudo suscribir": el error real era `Cannot read properties of
+    // null (reading 'reset')` al llamar `e.currentTarget.reset()` después
+    // del await (bug real visto en producción el 20-sep-2026, confirmado
+    // por el mensaje de error en pantalla). Se guarda la referencia al form
+    // ANTES del await para evitar esto.
+    const form = e.currentTarget;
     setEstado("enviando");
-    const email = new FormData(e.currentTarget).get("email");
+    const email = new FormData(form).get("email");
     try {
       const r = await fetch("/api/boletin", {
         method: "POST",
@@ -21,11 +31,8 @@ export default function NewsletterForm() {
         throw new Error(d.error || `HTTP ${r.status}`);
       }
       setEstado("ok");
-      e.currentTarget.reset();
+      form.reset();
     } catch (err) {
-      // Si esto sigue fallando en el navegador de Carlos, el mensaje acá
-      // ayuda a distinguir un bloqueador de ads (TypeError: Failed to fetch,
-      // sin llegar nunca al servidor) de un error real del servidor.
       setErrorMsg(err instanceof Error ? err.message : "Error desconocido");
       setEstado("error");
     }
@@ -51,12 +58,7 @@ export default function NewsletterForm() {
       >
         {estado === "enviando" ? "..." : "Suscribirme"}
       </button>
-      {estado === "error" && (
-        <p className="text-xs text-red-600">
-          No se pudo suscribir ({errorMsg}). Si tienes un bloqueador de anuncios activado, desactívalo para este
-          sitio e inténtalo de nuevo.
-        </p>
-      )}
+      {estado === "error" && <p className="text-xs text-red-600">No se pudo suscribir ({errorMsg}). Inténtalo de nuevo.</p>}
     </form>
   );
 }

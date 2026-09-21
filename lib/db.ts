@@ -26,3 +26,22 @@ export function getPool(): Pool | null {
 export function dbConfigurada(): boolean {
   return Boolean(process.env.DB_URL);
 }
+
+// Se agregó `ficha_tecnica_url` a `public_products` el 20-sep-2026 (ver
+// server/public-sync.js en Dinaseg-ERP, que trae la misma migración
+// `ADD COLUMN IF NOT EXISTS`). Ese ALTER solo corre cuando el ERP ejecuta la
+// sincronización — si el sitio se despliega ANTES de esa corrida, la
+// columna no existe todavía y las consultas de lib/products.ts fallan por
+// completo (no solo la ficha técnica: el catch genérico devolvía []  y
+// desaparecían TODOS los productos del sitio, con o sin foto — bug real
+// visto en producción el 20-sep-2026). Este sitio también corre el mismo
+// ALTER, idempotente y barato, así ninguno de los dos deploys depende del
+// orden en que se hagan.
+let schemaLista = false;
+export async function ensurePublicProductsSchema(): Promise<void> {
+  if (schemaLista) return;
+  const p = getPool();
+  if (!p) return;
+  await p.query(`ALTER TABLE IF EXISTS public_products ADD COLUMN IF NOT EXISTS ficha_tecnica_url TEXT`);
+  schemaLista = true;
+}
